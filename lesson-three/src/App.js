@@ -1,22 +1,45 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [canMove, setCanMove] = useState(true);
 
   useEffect(() => {
-    console.log("✅ Creating an interval");
-    const id = setInterval(() => {
-      console.log("⏰ Interval tick");
-      setCount((c) => c + 1);
-    }, 1000);
-    return () => {
-      console.log("❌ Clearing an interval");
-      clearInterval(id);
-    };
-  }, []);
-
-  return <h1>Counter: {count}</h1>;
+    function handleMove(e) {
+      if (canMove) {
+        setPosition({ x: e.clientX, y: e.clientY });
+      }
+    }
+    window.addEventListener("pointermove", handleMove);
+    return () => window.removeEventListener("pointermove", handleMove);
+  }, [canMove]);
+  return (
+    <>
+      <label>
+        <input
+          type="checkbox"
+          checked={canMove}
+          onChange={(e) => setCanMove(e.target.checked)}
+        />
+        The dot is allowed to move
+      </label>
+      <hr />
+      <div
+        style={{
+          position: "absolute",
+          backgroundColor: "pink",
+          borderRadius: "50%",
+          opacity: 0.6,
+          transform: `translate(${position.x}px, ${position.y}px)`,
+          pointerEvents: "none",
+          left: -20,
+          top: -20,
+          width: 40,
+          height: 40,
+        }}
+      />
+    </>
+  );
 }
 
 export default App;
